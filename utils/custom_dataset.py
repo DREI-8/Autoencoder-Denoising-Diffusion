@@ -8,8 +8,8 @@ class CustomDataset(Dataset):
         """
         Dataset for diffusion and denoising models.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         image_paths: list
             Paths to the images.
         transform: torchvision.transforms.Compose

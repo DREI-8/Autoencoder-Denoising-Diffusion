@@ -1,5 +1,5 @@
 """ Module for training the model. """
 
-from .unet import UNet
+from .trainer import Trainer
 
-__all__ = ['UNet']
+__all__ = ['Trainer']

@@ -2,6 +2,6 @@
 
 from .handle_dataset import HandleDataset
 from .custom_dataset import CustomDataset
-from .diffusion_scheduler import DiffusionScheduler
+from .noise_scheduler import NoiseScheduler
 
-__all__ = ['HandleDataset', 'CustomDataset', 'DiffusionScheduler']
+__all__ = ['HandleDataset', 'CustomDataset', 'NoiseScheduler']

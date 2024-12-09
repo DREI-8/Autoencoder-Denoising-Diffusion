@@ -7,7 +7,7 @@ from torchvision import datasets, transforms
 from torch.utils.data import Dataset, DataLoader
 import torch
 import numpy as np
-from utils.diffusion_scheduler import DiffusionScheduler
+from utils.noise_scheduler import NoiseScheduler
 from utils.custom_dataset import CustomDataset
 import matplotlib.pyplot as plt
 
@@ -17,8 +17,8 @@ class HandleDataset():
         Load a dataset from Kaggle. All images (in jpg) in the folder_name directory will be loaded (recursively).
         You can use folder_name = 'folder/subfolder' to load only a specific subfolder.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         kaggle_path: str
             Path to Kaggle dataset
         folder_name: str
@@ -61,15 +61,15 @@ class HandleDataset():
         """
         Split the dataset into train, validation and test sets.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         train_size: float
             Size of the training set. Default is 0.8.
         valid_size: float
             Size of the validation set. Default is 0.1.
 
-        Returns:
-        --------
+        Returns
+        -------
         train_set: list
             List of training images paths.
         valid_set: list
@@ -85,31 +85,31 @@ class HandleDataset():
         self.valid_set = self.image_paths[train_size:train_size+valid_size]
         self.test_set = self.image_paths[train_size+valid_size:]
     
-    def configure_denoising(self, predict_noise=True, include_timestep=True, num_timesteps=1000, noise_intensity=None):
+    def configure_denoising(self, predict_noise=True, include_timestep=True, noise_scheduler = None):
         """
         Configure the dataset for diffusion or denoising tasks. Use include_timestep=False for denoising tasks
-        and specify the noise intensity with a float or a tuple (range). Use include_timestep=True for diffusion tasks,
-        and you can specify the number of timesteps. Noise intensity will not be used for diffusion tasks.
-        If noise_intensity is None and include_timestep=False, a default value of 0.1 will be used.
+        and specify the noise intensity with a float or a tuple (range) within the NoiseScheduler class. 
+        Use include_timestep=True for diffusion tasks, and you can specify the number of timesteps in the NoiseScheduler class. 
+        Noise intensity will not be used for diffusion tasks. If noise_intensity is None and include_timestep=False, 
+        a default value of 0.1 will be used.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         predict_noise: bool
             If True, the model predicts the noise. Otherwise, it predicts the denoised image.
         include_timestep: bool
             If True, includes the timestep in the output.
-        num_timesteps: int
-            Number of diffusion steps.
-        noise_intensity: float or tuple(float, float)
-            - If float, a fixed noise intensity will be used.
-            - If tuple, a random noise intensity will be drawn from this range.
-            - Default is None for diffusion tasks.
+        noise_scheduler: NoiseScheduler
+            Instance of NoiseScheduler. Default is None.
         """
         self.predict_noise = predict_noise
         self.include_timestep = include_timestep
         self.denoising_configured = True
 
-        self.scheduler = DiffusionScheduler(num_timesteps, noise_intensity)        
+        if noise_scheduler is not None:
+            self.scheduler = noise_scheduler
+        else:
+            self.scheduler = NoiseScheduler(num_timesteps=1000, noise_intensity=0.1)     
     
     def prepare(self, augment=True, target_size=(64, 64), batch_size=32, shuffle=True, custom_transforms_train=None, custom_transforms_val_test=None):
         """
@@ -117,8 +117,8 @@ class HandleDataset():
         If augment is True, random horizontal flip and rotation are applied to the training set. 
         You can also pass custom transformations that will override the default ones (augment and target_size are ignored).
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         augment: bool
             Apply data augmentation to the training set. Default is True.
         target_size: tuple
@@ -132,8 +132,8 @@ class HandleDataset():
         custom_transforms_val_test: list
             Custom transformations for the validation and test sets. Default is None.
 
-        Returns:
-        --------
+        Returns
+        -------
         train_loader: DataLoader
             DataLoader for the training set.
         valid_loader: DataLoader
@@ -202,8 +202,8 @@ class HandleDataset():
         """
         Display samples from a DataLoader in a subplot.
 
-        Parameters:
-        ------------
+        Parameters
+        ----------
         loader : DataLoader
             Instance of DataLoader containing the data to display.
         num_samples : int
@@ -239,8 +239,8 @@ class HandleDataset():
             target_img = data[0][1][idx]
             timestep = data[0][2][idx] if len(data[0]) > 2 else None
 
-            noisy_img = denormalize(noisy_img)
-            target_img = denormalize(target_img)
+            noisy_img = denormalize(noisy_img.cpu())
+            target_img = denormalize(target_img.cpu())
 
             axes[2 * i].imshow(noisy_img)
             axes[2 * i].axis('off')
