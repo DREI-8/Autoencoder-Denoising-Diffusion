@@ -3,8 +3,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+TODO
+model.pth
 # C extensions
 *.so
+
+pth/
+results/
+rapport.pdf
 
 # Distribution / packaging
 .Python
