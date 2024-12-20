@@ -1,4 +1,4 @@
-# Autoencoder & Diffusion Models for Image Denoising
+# Image denoising and generation using autoencoders and diffusion models
 
 This repository explores the use of **autoencoders** and **diffusion models** for image denoising and generation. Leveraging architectures like convolutional autoencoders and U-Net, this project compares different approaches to reduce noise in images while preserving essential features.
 
